@@ -31,22 +31,25 @@ try {
   const homeDialog = await page.locator('[data-nextjs-dialog], #webpack-dev-server-client-overlay').count();
 
   await page.goto('http://127.0.0.1:3001/devices', { waitUntil: 'networkidle', timeout: 30_000 });
+  await page.getByRole('button', { name: 'Generate Pairing Code' }).click();
+  await page.getByText(/Expires/).waitFor({ state: 'visible', timeout: 5_000 });
   const devicesText = await page.locator('body').innerText();
   const devicesHasPair = devicesText.includes('PAIR DEVICE');
   const devicesHasList = devicesText.includes('CONNECTED DEVICES');
+  const devicesHasGeneratedPair = /\b\d{6}\b/.test(devicesText);
   const devicesDialog = await page.locator('[data-nextjs-dialog], #webpack-dev-server-client-overlay').count();
 
   await page.screenshot({ path: 'data/dashboard-verification.png', fullPage: true });
   console.log(JSON.stringify({
     homeHasTitle, homeHasStatus, homeDialog,
-    devicesHasPair, devicesHasList, devicesDialog,
+    devicesHasPair, devicesHasList, devicesHasGeneratedPair, devicesDialog,
     consoleErrors,
     notFound,
     failed,
     screenshot: 'data/dashboard-verification.png'
   }, null, 2));
 
-  if (!homeHasTitle || !homeHasStatus || homeDialog || !devicesHasPair || !devicesHasList || devicesDialog || consoleErrors.length) {
+  if (!homeHasTitle || !homeHasStatus || homeDialog || !devicesHasPair || !devicesHasList || !devicesHasGeneratedPair || devicesDialog || consoleErrors.length) {
     process.exitCode = 1;
   }
 } finally {

@@ -36,7 +36,10 @@ $config = @{
   pairCode = $PairCode
   deviceName = $DeviceName
   workspace = $Workspace
-}$config | ConvertTo-Json | Set-Content -Path $configFile -Encoding UTF8
+}
+$json = $config | ConvertTo-Json
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($configFile, $json, $utf8NoBom)
 Write-Host ''
 Write-Host 'Desktop MCP Agent setup saved.'
 Write-Host ('Config: ' + $configFile)

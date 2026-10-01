@@ -24,6 +24,8 @@ export default function DevicesPage() {
   const [devices, setDevices] = useState<Device[]>([]);
   const [audit, setAudit] = useState<Audit[]>([]);
   const [pair, setPair] = useState<{ code: string; expiresAt: string } | null>(null);
+  const [pairLoading, setPairLoading] = useState(false);
+  const [pairError, setPairError] = useState('');
   const [loading, setLoading] = useState(true);
 
   async function refresh() {
@@ -39,8 +41,26 @@ export default function DevicesPage() {
   }
 
   async function createPairCode() {
-    const res = await fetch('/api/pair/start', { method: 'POST' });
-    if (res.ok) setPair(await res.json());
+    setPairLoading(true);
+    setPairError('');
+    try {
+      const res = await fetch('/api/pair/start', {
+        method: 'POST',
+        cache: 'no-store',
+        credentials: 'same-origin',
+        headers: { accept: 'application/json' }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || typeof data.code !== 'string') {
+        throw new Error(data.error ?? 'PAIRING_FAILED');
+      }
+      setPair({ code: data.code, expiresAt: data.expiresAt });
+      await refresh();
+    } catch (error) {
+      setPairError(error instanceof Error ? error.message : 'Unable to generate pairing code.');
+    } finally {
+      setPairLoading(false);
+    }
   }
 
   async function revoke(id: string) {
@@ -72,12 +92,15 @@ export default function DevicesPage() {
 
       <section className="card">
         <div className="label">PAIR DEVICE</div>
-        <p>Generate a one-time code. On the agent machine, configure the gateway URL and pair code.</p>
+        <p>Generate a one-time code, then use the agent setup wizard on the target Windows PC. No .env editing is required.</p>
         <div className="pairrow">
-          <button onClick={() => void createPairCode()}>Generate Pairing Code</button>
+          <button onClick={() => void createPairCode()} disabled={pairLoading}>
+            {pairLoading ? 'Generating…' : 'Generate Pairing Code'}
+          </button>
           {pair && <code className="paircode">{pair.code}</code>}
         </div>
         {pair && <p>Expires {new Date(pair.expiresAt).toLocaleTimeString()}.</p>}
+        {pairError && <p role="alert">Unable to generate code: {pairError}</p>}
       </section>
 
       <section className="card next">
