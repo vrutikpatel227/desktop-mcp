@@ -1,0 +1,11 @@
+{
+  "server": { "name": "desktop-mcp", "host": "127.0.0.1", "port": 8787 },
+  "agent": { "host": "127.0.0.1", "port": 8788 },
+  "security": {
+    "authentication": "required",
+    "confirmationMode": "smart",
+    "workspaceOnly": true
+  },
+  "limits": { "maxOutputBytes": 1000000, "commandTimeoutMs": 120000 },
+  "logging": { "enabled": true, "retentionDays": 30 }
+}
