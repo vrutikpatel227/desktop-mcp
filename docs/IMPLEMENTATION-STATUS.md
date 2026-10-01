@@ -1,60 +1,107 @@
 # Implementation Status
 
-## Phase 1 — Started
+## Current state
+The Universal Desktop MCP Server implementation is substantially built and locally verified.
 
-### Latest verified baseline
-- 19 MCP tools discoverable
-- 1 MCP resource discoverable
-- 1 MCP prompt discoverable
-- Authenticated MCP-to-Agent calls verified
-- Filesystem read/write/delete verified
-- Managed process start/list/stop verified
-- Git status verified
-- Dashboard production build verified with Next.js 16.3.8
-- Local Agent currently running on 127.0.0.1:8788
+## Core
+- TypeScript monorepo
+- Active gateway: apps/gateway
+- Active local MCP server: apps/mcp-server
+- Desktop Agent: apps/desktop-agent
+- Dashboard: apps/dashboard
+- CLI and release scripts
+- Shared protocol/tool registry
 
-### Working
-- TypeScript monorepo scaffold
-- MCP Server using the current official MCP TypeScript SDK v2
-- stdio MCP transport
-- Desktop Agent on localhost
-- Bearer authentication between MCP Server and Agent
-- Workspace sandbox
-- Path traversal protection
-- Protected Windows path checks
-- Filesystem list/read/create/write/delete
-- System information tool
-- PowerShell execution with risk classification
-- High/critical command blocking
-- Medium-risk confirmation gate via environment setting
-- JSONL audit logging
-- CLI doctor
-- Smoke test
+## MCP surface
+- 57 MCP tools discoverable
+- 1 MCP resource
+- 1 MCP prompt
+- Local stdio transport
+- Remote Streamable HTTP MCP transport
+- Device routing through the gateway
 
-### MCP tools currently exposed
-- system.get_info
-- agent.health
-- filesystem.list_directory
-- filesystem.read_file
-- filesystem.create_directory
-- filesystem.write_file
-- filesystem.delete_file
-- terminal.execute_powershell
-
-## Next implementation modules
-- Process manager
-- Git tools
-- Browser automation via Playwright
-- Application control
-- Device pairing UI
-- OAuth / remote authorization
-- Dashboard
-- Remote WebSocket gateway
-- Multi-device registry
+## Desktop capabilities
+- Filesystem CRUD/search/move/copy
+- PowerShell execution
+- Managed process lifecycle and logs
+- Project detection/create/run
+- Git status/diff/log/add/commit/pull/push
+- Browser automation
+- Safe application launch/close/focus
+- System metrics and information
+## Security
+- Workspace sandbox and traversal protection
+- Protected system paths
+- Command risk classification
+- Central policy store
+- Human confirmation controls
+- Emergency stop
+- SSRF protections
 - Rate limiting
-- Secret storage
-- Installer and signed update flow
-- Full test suite and E2E security tests
+- Authenticated device channels
+- Token rotation/revocation
+- Encrypted secrets
+- Audit logs and retention
+- Payload/output limits
+- Production startup guards
 
-## Important
-This is a working foundation, not the final production release. Production deployment must replace development defaults, add stronger authentication/pairing, hardened network controls, signed releases and full security testing.
+## Integrations
+- GitHub adapter
+- Gmail adapter
+- Microsoft Outlook adapter
+- OAuth authorization-code + PKCE flow
+- OIDC/JWT verification hooks
+- Multi-device registry and pairing
+
+## Dashboard
+Verified pages:
+- /
+- /devices
+- /tools
+- /team
+- /settings
+
+Verified API areas:
+- health
+- devices
+- pairing
+- policy
+- audit
+- team/RBAC
+- configuration
+
+## Verification
+- TypeScript: PASS
+- Security + extended tests: 11/11 PASS
+- Core MCP smoke: PASS
+- Browser Agent smoke: PASS
+- Remote MCP smoke: PASS
+- OAuth smoke: PASS
+- Multi-device smoke: PASS
+- Remote E2E: PASS
+- Live security E2E: PASS
+- Dashboard browser verification: PASS
+- Dashboard route sweep: PASS
+- Release build verification: PASS
+- npm audit --omit=dev: 0 vulnerabilities
+## Production configuration still required
+The software is implemented, but a real public deployment needs operator-owned configuration:
+- Strong production secrets
+- PostgreSQL and backup strategy
+- Redis credentials/ACLs
+- HTTPS domain and certificates
+- Dashboard auth or SSO configuration
+- OIDC provider configuration when used
+- Real GitHub/Gmail/Outlook OAuth credentials
+- Windows code-signing certificate
+- Production monitoring and alerting
+- Final external security assessment
+
+## Environment note
+Docker was not available on this Windows machine during validation, so Docker image/compose execution was not run locally. The deployment files are present and the application/release checks do not depend on Docker being installed.
+
+## Canonical implementation
+apps/gateway is the active remote gateway. Older draft implementations are kept under archive/drafts and are not part of the main build.
+
+## Next practical step
+Configure production secrets/providers, build signed installer artifacts, deploy PostgreSQL/Redis/gateway/dashboard behind HTTPS, then run the production release checklist.

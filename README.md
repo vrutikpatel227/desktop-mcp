@@ -1,23 +1,60 @@
 # Desktop MCP Server
 
-Production-oriented Universal Desktop MCP Server scaffold.
+Universal Desktop MCP Server: an MCP control plane + local Windows Desktop Agent.
 
-## Runtime
-- Node.js 20+
-- TypeScript
-- MCP TypeScript SDK v2
-- Local Desktop Agent
-- Windows-first design
+## Architecture
+Any MCP client -> MCP Server -> authentication/policy -> Desktop Agent -> filesystem/process/browser/apps/Git/integrations.
 
-## Start
-1. Copy .env.example to .env and set values.
-2. Install dependencies with npm install.
-3. Start the agent: npm run dev:agent
-4. Start MCP server: npm run dev:server
-5. Run checks: npm run doctor
+Local mode uses stdio MCP transport. Remote mode uses the gateway with Streamable HTTP for MCP and an authenticated WebSocket agent channel.
 
-## Current implementation
-Core filesystem, system information, PowerShell execution policy, process listing, audit logging, authentication between MCP server and local agent, and a CLI doctor.
+## Implemented
+- 57 MCP tools
+- 1 MCP resource
+- 1 reusable MCP prompt
+- Workspace sandbox and path traversal protection
+- Risk classification and policy enforcement
+- Human confirmation gates and emergency stop
+- Filesystem, PowerShell and managed process controls
+- Git and GitHub integration
+- Browser automation with Playwright + SSRF controls
+- Project detection/creation/run workflows
+- Application allowlist
+- Encrypted secrets
+- Gmail and Outlook adapters
+- Device pairing, token rotation and multi-device routing
+- OAuth/PKCE and OIDC verification hooks
+- Dashboard with devices, tools, team/RBAC, settings, policy and audit views
+- Metrics, audit storage, retention and CI/release tooling
 
-## Security model
-The agent exposes only approved operations and enforces a workspace boundary. High-risk command classes are denied by default.
+## Development
+Requirements: Node.js 20+.
+
+Install:
+`npm ci`
+
+Run Agent:
+`npm run dev:agent`
+
+Run local MCP server:
+`npm run dev:server`
+
+Run Gateway:
+`npm run dev:gateway`
+
+Run Dashboard:
+`npm run dev:dashboard`
+
+Health:
+`npm run doctor`
+
+## Verification
+`npx tsc --noEmit`
+`npx tsx --test tests/security.test.ts tests/extended.test.ts`
+`npx tsx tests/smoke.ts`
+
+Remote/OAuth/E2E and dashboard browser tests live in `tests/`.
+
+## Production
+Production mode requires non-default secrets, PostgreSQL, HTTPS/TLS or a trusted TLS proxy, and real identity/integration credentials. Do not expose development credentials or the local Agent port publicly.
+
+See `SECURITY.md`, `docs/PRODUCTION-SETUP.md` and `deploy/RELEASE-CHECKLIST.md`.

@@ -3,7 +3,8 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Desktop MCP Dashboard',
-  description: 'Local control plane for Desktop MCP Server'
+  description: 'Local control plane for Desktop MCP Server',
+  icons: { icon: '/icon.svg' }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

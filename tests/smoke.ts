@@ -57,6 +57,27 @@ try {
     arguments: { cwd: workspace + '\\git-test' }
   });
   console.log('GIT=' + textOf(git));
+
+  const demoDir = workspace + '\\demo-project';
+  await client.callTool({ name: 'filesystem.create_directory', arguments: { path: demoDir } });
+  await client.callTool({ name: 'filesystem.write_file', arguments: {
+    path: demoDir + '\\package.json',
+    content: JSON.stringify({ name: 'demo-project', scripts: { dev: 'node server.js' }, dependencies: { react: '19.0.0', vite: '7.0.0' } })
+  }});
+  const project = await client.callTool({ name: 'project.detect', arguments: { cwd: demoDir } });
+  console.log('PROJECT=' + textOf(project));
+
+  const browser = await client.callTool({ name: 'browser.open_url', arguments: { url: 'http://127.0.0.1:8788/health' } });
+  const browserData = JSON.parse(textOf(browser));
+  console.log('BROWSER=' + JSON.stringify(browserData));
+  const page = await client.callTool({ name: 'browser.get_page_text', arguments: { id: browserData.id } });
+  console.log('PAGE=' + textOf(page));
+  await client.callTool({ name: 'browser.close', arguments: { id: browserData.id } });
+
+  await client.callTool({ name: 'secrets.set', arguments: { name: 'smoke-test', value: 'desktop-mcp-secret' } });
+  const secret = await client.callTool({ name: 'secrets.get', arguments: { name: 'smoke-test' } });
+  console.log('SECRET=' + textOf(secret));
+  await client.callTool({ name: 'secrets.delete', arguments: { name: 'smoke-test' } });
 } finally {
   await client.close();
 }

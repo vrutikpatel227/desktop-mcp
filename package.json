@@ -1,6 +1,6 @@
 {
   "name": "desktop-mcp-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Universal Desktop MCP Server and local execution agent",
@@ -10,7 +10,9 @@
   ],
   "scripts": {
     "dev:server": "tsx apps/mcp-server/src/index.ts",
+    "dev:gateway": "tsx apps/gateway/src/index.ts",
     "dev:agent": "tsx apps/desktop-agent/src/index.ts",
+    "dev:dashboard": "npm --prefix apps/dashboard run dev",
     "dev:cli": "tsx apps/cli/src/index.ts",
     "build": "tsc -p tsconfig.json",
     "test": "node --test",
@@ -21,17 +23,32 @@
   },
   "dependencies": {
     "@modelcontextprotocol/client": "^2.2.0",
+    "@modelcontextprotocol/node": "^2.1.0",
     "@modelcontextprotocol/server": "^2.2.0",
+    "@octokit/rest": "^22.0.1",
+    "@types/express": "^5.0.6",
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1",
+    "jose": "^6.2.12",
     "next": "^16.3.8",
+    "nodemailer": "^10.0.13",
+    "pg": "^8.23.1",
+    "playwright": "^1.63.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
+    "redis": "^6.3.0",
     "tsx": "^4.23.15",
+    "ws": "^8.22.0",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.6.3",
+    "@types/nodemailer": "^8.0.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@types/ws": "^8.18.2",
     "typescript": "^7.0.2"
   }
 }

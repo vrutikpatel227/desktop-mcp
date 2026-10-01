@@ -1,0 +1,7 @@
+mcp.example.com {
+  reverse_proxy gateway:8790
+}
+
+dashboard.example.com {
+  reverse_proxy dashboard:3000
+}

@@ -16,10 +16,11 @@ export const gitStatus = (cwd: string) => git(['status', '--short', '--branch'],
 export const gitDiff = (cwd: string) => git(['diff'], cwd);
 export const gitLog = (cwd: string) => git(['log', '--oneline', '-20'], cwd);
 
-export async function gitWrite(action: 'add' | 'commit' | 'pull' | 'push', cwd: string, message?: string) {
+export async function gitWrite(action: 'add' | 'commit' | 'pull' | 'push', cwd: string, message?: string, confirmed = false) {
   if (process.env.DESKTOP_MCP_ALLOW_GIT_WRITE !== 'true') {
     throw new Error('GIT_WRITE_DISABLED');
   }
+  if (!confirmed) throw new Error('CONFIRMATION_REQUIRED');
   if (action === 'add') return git(['add', '.'], cwd);
   if (action === 'commit') return git(['commit', '-m', message ?? 'Update from Desktop MCP'], cwd);
   return git([action], cwd);

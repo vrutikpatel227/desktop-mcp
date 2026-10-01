@@ -72,6 +72,17 @@ export default function Dashboard() {
       </section>
 
       <section className="card next">
+        <div className="label">CONTROL PLANE</div>
+        <div className="nav-grid">
+          <a href="/devices" className="control-link">Devices & Pairing →</a>
+          <a href="/tools" className="control-link">Tools →</a>
+          <a href="/team" className="control-link">Team & RBAC →</a>
+          <a href="/settings" className="control-link">Settings →</a>
+        </div>
+        <p>Manage paired agents, inspect the tool surface, team roles and execution policy.</p>
+      </section>
+
+      <section className="card next">
         <div className="label">IMPLEMENTATION</div>
         <div className="checks">
           <span>✓ MCP Server</span>
