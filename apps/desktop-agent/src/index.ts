@@ -4,7 +4,7 @@ import { promisify } from 'node:util';
 import { randomUUID } from 'node:crypto';
 import WebSocket from 'ws';
 import { copyFile, createDirectory, deleteDirectory, deleteFile, listDirectory, moveFile, readFile, searchFiles, searchInFiles, writeFile } from './filesystem.js';
-import { configSummary, MAX_OUTPUT, PORT, TOKEN, WORKSPACE } from './config.js';
+import { configSummary, DEVICE_NAME, GATEWAY_URL, GATEWAY_WS_URL, MAX_OUTPUT, PAIR_CODE, PORT, saveUserConfig, TOKEN, WORKSPACE } from './config.js';
 import { classifyCommand } from '../../../packages/security/src/risk.js';
 import { decide } from '../../../packages/policy-engine/src/policy.js';
 import { loadPolicy } from '../../../packages/policy-engine/src/store.js';
@@ -204,17 +204,17 @@ server.listen(PORT, '127.0.0.1', () => {
 });
 
 async function ensureRemoteIdentity() {
-  const gatewayHttp = process.env.DESKTOP_MCP_GATEWAY_URL;
+  const gatewayHttp = GATEWAY_URL;
   let deviceId = process.env.DESKTOP_MCP_DEVICE_ID ?? await getSecret('device-id');
   let deviceToken = process.env.DESKTOP_MCP_DEVICE_TOKEN ?? await getSecret('device-token');
-  const pairCode = process.env.DESKTOP_MCP_PAIR_CODE;
+  const pairCode = PAIR_CODE;
   if ((!deviceId || !deviceToken) && gatewayHttp && pairCode) {
     const response = await fetch(gatewayHttp + '/api/pair/complete', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         code: pairCode,
-        name: process.env.DESKTOP_MCP_DEVICE_NAME ?? process.env.COMPUTERNAME ?? 'Desktop',
+        name: DEVICE_NAME,
         platform: process.platform
       })
     });
@@ -224,13 +224,14 @@ async function ensureRemoteIdentity() {
     deviceToken = result.token;
     await setSecret('device-id', deviceId);
     await setSecret('device-token', deviceToken);
+    saveUserConfig({ pairCode: undefined, deviceName: DEVICE_NAME });
     console.error('Desktop Agent paired as ' + deviceId);
   }
   return { deviceId, deviceToken };
 }
 
 async function startRemoteConnection() {
-  const gateway = process.env.DESKTOP_MCP_GATEWAY_WS_URL;
+  const gateway = GATEWAY_WS_URL;
   if (!gateway) return;
   const identity = await ensureRemoteIdentity();
   if (!identity.deviceId || !identity.deviceToken) {

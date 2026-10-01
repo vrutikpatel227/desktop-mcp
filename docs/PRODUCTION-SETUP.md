@@ -22,6 +22,8 @@ The production dashboard refuses requests when authentication is not configured.
 
 ## 3. Remote devices
 
+End users should not edit `.env` files for pairing. Double-click `scripts/setup-agent.cmd` on the target Windows PC, enter the Gateway URL and the 6-digit pairing code from the dashboard, and let the setup wizard save the local configuration. The one-time pairing code is removed after successful pairing; the device credential is stored through the encrypted secret store under the user's DesktopMCP data directory.
+
 Create a pairing code from the authenticated gateway:
 POST /api/pair/start
 

@@ -32,8 +32,10 @@ Requirements: Node.js 20+.
 Install:
 `npm ci`
 
-Run Agent:
+Run Agent (developer mode):
 `npm run dev:agent`
+
+First-time device setup (no `.env` editing): double-click `scripts/setup-agent.cmd`, enter the Gateway URL and the 6-digit pairing code from Dashboard → Devices. The agent stores its connection settings locally and securely saves the issued device credential after pairing.
 
 Run local MCP server:
 `npm run dev:server`
