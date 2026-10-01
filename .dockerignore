@@ -1,0 +1,12 @@
+node_modules
+.next
+dist
+data
+workspace
+release
+archive
+.git
+.gitignore
+*.log
+tests
+coverage

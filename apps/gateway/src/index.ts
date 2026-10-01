@@ -409,7 +409,8 @@ server.on('upgrade', (req, socket, head) => {
   wss.handleUpgrade(req, socket, head, ws => wss.emit('connection', ws, req));
 });
 
-server.listen(PORT, '127.0.0.1', () => {
+const BIND_ADDRESS = process.env.DESKTOP_MCP_BIND_ADDRESS ?? (production ? '0.0.0.0' : '127.0.0.1');
+server.listen(PORT, BIND_ADDRESS, () => {
   const scheme = tlsCert && tlsKey && fs.existsSync(tlsCert) && fs.existsSync(tlsKey) ? 'https' : 'http';
-  console.log('Desktop MCP Gateway listening on ' + scheme + '://127.0.0.1:' + PORT);
+  console.log('Desktop MCP Gateway listening on ' + scheme + '://' + BIND_ADDRESS + ':' + PORT);
 });

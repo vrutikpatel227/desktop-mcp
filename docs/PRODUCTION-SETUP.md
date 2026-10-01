@@ -36,6 +36,7 @@ Required:
 - PostgreSQL
 - Redis
 - HTTPS through Caddy or an equivalent trusted reverse proxy
+- Gateway bind address set to 0.0.0.0 inside the container/network
 - DESKTOP_MCP_DATABASE_URL
 - REDIS_URL
 - DESKTOP_MCP_ADMIN_TOKEN

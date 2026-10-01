@@ -1,15 +1,22 @@
-FROM node:24-bookworm-slim AS deps
+FROM node:24-bookworm-slim AS build
 WORKDIR /app
-COPY package*.json ./
+COPY package.json package-lock.json ./
+COPY apps/dashboard/package.json apps/dashboard/package.json
 RUN npm ci
-
-FROM deps AS build
-COPY . .
+COPY apps/dashboard ./apps/dashboard
 RUN npm --prefix apps/dashboard run build
 
 FROM node:24-bookworm-slim AS runtime
 WORKDIR /app
-COPY --from=build /app ./
 ENV NODE_ENV=production
+ENV PORT=3000
+COPY package.json package-lock.json ./
+COPY apps/dashboard/package.json apps/dashboard/package.json
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/apps/dashboard/.next ./apps/dashboard/.next
+COPY --from=build /app/apps/dashboard/public ./apps/dashboard/public
+COPY --from=build /app/apps/dashboard/app ./apps/dashboard/app
+COPY --from=build /app/apps/dashboard/proxy.ts ./apps/dashboard/proxy.ts
+COPY --from=build /app/apps/dashboard/next-env.d.ts ./apps/dashboard/next-env.d.ts
 EXPOSE 3000
-CMD ["npm", "--prefix", "apps/dashboard", "run", "start"]
+CMD ["npm", "--prefix", "apps/dashboard", "start", "--", "-H", "0.0.0.0", "-p", "3000"]

@@ -97,6 +97,9 @@ The software is implemented, but a real public deployment needs operator-owned c
 - Production monitoring and alerting
 - Final external security assessment
 
+## Deployment hardening update
+Docker deployment files are now complete, including gateway/dashboard Dockerfiles, compose health checks, private gateway exposure behind Caddy, and a production-safe gateway bind address.
+
 ## Environment note
 Docker was not available on this Windows machine during validation, so Docker image/compose execution was not run locally. The deployment files are present and the application/release checks do not depend on Docker being installed.
 

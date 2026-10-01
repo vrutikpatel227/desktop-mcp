@@ -8,6 +8,11 @@ services:
       POSTGRES_PASSWORD: change-me-in-production
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U desktop_mcp -d desktop_mcp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:8-alpine
@@ -15,30 +20,48 @@ services:
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   gateway:
     build:
       context: ..
       dockerfile: Dockerfile.gateway
     restart: unless-stopped
-    depends_on: [postgres, redis]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       DESKTOP_MCP_GATEWAY_PORT: 8790
+      DESKTOP_MCP_BIND_ADDRESS: 0.0.0.0
       DESKTOP_MCP_DATABASE_URL: postgresql://desktop_mcp:change-me-in-production@postgres:5432/desktop_mcp
       REDIS_URL: redis://redis:6379
       DESKTOP_MCP_ADMIN_TOKEN: replace-with-a-secret
       DESKTOP_MCP_ISSUER: https://mcp.example.com
       DESKTOP_MCP_TRUST_PROXY_TLS: "true"
-    ports:
-      - "8790:8790"
+    expose:
+      - "8790"
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:8790/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   dashboard:
     build:
       context: ..
       dockerfile: Dockerfile.dashboard
     restart: unless-stopped
-    depends_on: [gateway]
+    depends_on:
+      gateway:
+        condition: service_healthy
     environment:
       NODE_ENV: production
       DESKTOP_MCP_GATEWAY_URL: http://gateway:8790
@@ -51,7 +74,11 @@ services:
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
-    depends_on: [gateway, dashboard]
+    depends_on:
+      gateway:
+        condition: service_healthy
+      dashboard:
+        condition: service_started
     ports:
       - "80:80"
       - "443:443"
