@@ -2,6 +2,17 @@
 
 ## Phase 1 — Started
 
+### Latest verified baseline
+- 19 MCP tools discoverable
+- 1 MCP resource discoverable
+- 1 MCP prompt discoverable
+- Authenticated MCP-to-Agent calls verified
+- Filesystem read/write/delete verified
+- Managed process start/list/stop verified
+- Git status verified
+- Dashboard production build verified with Next.js 16.3.8
+- Local Agent currently running on 127.0.0.1:8788
+
 ### Working
 - TypeScript monorepo scaffold
 - MCP Server using the current official MCP TypeScript SDK v2

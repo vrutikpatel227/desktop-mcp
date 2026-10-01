@@ -121,6 +121,35 @@ function textResult(value: unknown) {
     inputSchema: z.object({ cwd: z.string().optional() })
   }, async ({ cwd }) => textResult(await agent('git_push', { cwd: cwd ?? WORKSPACE })));
 
+  server.registerResource(
+    'workspace',
+    'workspace://root',
+    { title: 'Approved workspace', mimeType: 'text/plain' },
+    async uri => ({
+      contents: [{ uri: uri.href, mimeType: 'text/plain', text: WORKSPACE }]
+    })
+  );
+
+  server.registerPrompt(
+    'create_web_project',
+    {
+      title: 'Create Web Project',
+      description: 'Guide an AI workflow to create and run a web project inside the approved workspace.',
+      argsSchema: z.object({
+        framework: z.string().default('Next.js')
+      })
+    },
+    ({ framework }) => ({
+      messages: [{
+        role: 'user' as const,
+        content: {
+          type: 'text' as const,
+          text: 'Create a production-ready ' + framework + ' project inside the approved workspace. Inspect the workspace first, create the project, install dependencies, run validation, and report the result.'
+        }
+      }]
+    })
+  );
+
   return server; 
 }
 
