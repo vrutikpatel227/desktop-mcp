@@ -9,7 +9,10 @@ export async function POST() {
       headers: { authorization: 'Bearer ' + token }
     });
     return NextResponse.json(await response.json(), { status: response.status });
-  } catch {
-    return NextResponse.json({ error: 'GATEWAY_OFFLINE' }, { status: 502 });
+  } catch (error) {
+    return NextResponse.json({
+      error: 'GATEWAY_OFFLINE',
+      detail: error instanceof Error ? error.message : String(error)
+    }, { status: 502 });
   }
 }
