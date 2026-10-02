@@ -1,13 +1,18 @@
 ﻿import { NextResponse } from 'next/server';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 30;
+
 export async function POST() {
   const gateway = process.env.DESKTOP_MCP_GATEWAY_URL ?? 'http://127.0.0.1:8790';
   const token = process.env.DESKTOP_MCP_ADMIN_TOKEN ?? 'change-me-admin';
   try {
     const response = await fetch(gateway + '/api/pair/start', {
       method: 'POST',
-      headers: { authorization: 'Bearer ' + token },
-      cache: 'no-store'
+      headers: { authorization: 'Bearer ' + token, accept: 'application/json' },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(12000)
     });
     const body = await response.text();
     let data: unknown;
@@ -17,3 +22,4 @@ export async function POST() {
     return NextResponse.json({ error: 'GATEWAY_OFFLINE', detail: error instanceof Error ? error.message : String(error) }, { status: 502 });
   }
 }
+
