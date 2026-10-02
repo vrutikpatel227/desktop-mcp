@@ -43,7 +43,8 @@ export default function DevicesPage() {
   }
 
   function getCommand(code: string) {
-    return 'powershell -NoProfile -ExecutionPolicy Bypass -File "$HOME\\Desktop\\Desktop MCP Server\\scripts\\setup-agent.ps1" -GatewayUrl "http://127.0.0.1:8790" -PairCode "' + code + '"';
+    const gateway = 'https://desktop-mcp-gateway-vrutik.onrender.com';
+    return 'powershell -NoProfile -ExecutionPolicy Bypass -File "$HOME\\Desktop\\Desktop MCP Server\\scripts\\setup-agent.ps1" -GatewayUrl "' + gateway + '" -PairCode "' + code + '"';
   }
 
   async function copyCommand() {
