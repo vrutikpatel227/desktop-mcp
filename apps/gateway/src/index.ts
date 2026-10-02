@@ -142,7 +142,8 @@ async function handleApi(req: http.IncomingMessage, res: http.ServerResponse, ur
 
   if (req.method === 'GET' && url.pathname === '/api/devices') {
     const devices = await listDevices();
-    return json(res, 200, devices.map(d => ({ ...d, online: isAgentOnline(d.id) })));
+    const now = Date.now();
+    return json(res, 200, devices.map(d => ({ ...d, online: isAgentOnline(d.id) || Boolean(d.lastSeen && now - Date.parse(d.lastSeen) < 90000) })));
   }
 
   if (req.method === 'POST' && url.pathname === '/api/pair/start') {
