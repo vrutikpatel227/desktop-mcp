@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: desktop-mcp-gateway-vrutik
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: node dist/apps/gateway/src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DESKTOP_MCP_BIND_ADDRESS
+        value: 0.0.0.0
+      - key: DESKTOP_MCP_GATEWAY_PORT
+        value: 10000
+      - key: DESKTOP_MCP_TRUST_PROXY_TLS
+        value: true
+      - key: DESKTOP_MCP_ISSUER
+        value: https://desktop-mcp-gateway-vrutik.onrender.com
+      - key: DESKTOP_MCP_DATABASE_URL
+        sync: false
+      - key: DESKTOP_MCP_ADMIN_TOKEN
+        sync: false
+      - key: DESKTOP_MCP_JWT_SECRET
+        sync: false
