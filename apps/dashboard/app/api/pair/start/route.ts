@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 
 export async function POST() {
   const gateway = process.env.DESKTOP_MCP_GATEWAY_URL ?? 'http://127.0.0.1:8790';
@@ -6,13 +6,14 @@ export async function POST() {
   try {
     const response = await fetch(gateway + '/api/pair/start', {
       method: 'POST',
-      headers: { authorization: 'Bearer ' + token }
+      headers: { authorization: 'Bearer ' + token },
+      cache: 'no-store'
     });
-    return NextResponse.json(await response.json(), { status: response.status });
+    const body = await response.text();
+    let data: unknown;
+    try { data = JSON.parse(body); } catch { data = { error: body.slice(0, 500) }; }
+    return NextResponse.json(data, { status: response.status });
   } catch (error) {
-    return NextResponse.json({
-      error: 'GATEWAY_OFFLINE',
-      detail: error instanceof Error ? error.message : String(error)
-    }, { status: 502 });
+    return NextResponse.json({ error: 'GATEWAY_OFFLINE', detail: error instanceof Error ? error.message : String(error) }, { status: 502 });
   }
 }
