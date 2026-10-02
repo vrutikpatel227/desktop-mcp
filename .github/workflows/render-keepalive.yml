@@ -1,0 +1,15 @@
+name: Render Gateway Keepalive
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Keep gateway awake
+        run: |
+          curl --fail --silent --show-error --max-time 20 \
+            https://desktop-mcp-gateway-vrutik.onrender.com/health

@@ -12,6 +12,8 @@ export default function DevicesPage() {
   const [pairLoading, setPairLoading] = useState(false);
   const [pairError, setPairError] = useState('');
   const [copyMessage, setCopyMessage] = useState('');
+  const [revokeId, setRevokeId] = useState<string | null>(null);
+  const [revokeError, setRevokeError] = useState('');
   const [loading, setLoading] = useState(true);
   const apiUrl = (path: string) => window.location.origin + path;
 
@@ -54,8 +56,17 @@ export default function DevicesPage() {
   }
 
   async function revoke(id: string) {
-    await fetch(apiUrl('/api/devices/' + encodeURIComponent(id) + '/revoke'), { method: 'POST' });
-    await refresh();
+    setRevokeId(id); setRevokeError('');
+    try {
+      const response = await fetch(apiUrl('/api/devices/' + encodeURIComponent(id)), {
+        method: 'DELETE', credentials: 'same-origin', headers: { accept: 'application/json' }
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error ?? 'REVOKE_FAILED');
+      await refresh();
+    } catch (error) {
+      setRevokeError(error instanceof Error ? error.message : 'Unable to revoke device.');
+    } finally { setRevokeId(null); }
   }
 
   useEffect(() => {
@@ -110,11 +121,14 @@ export default function DevicesPage() {
               <div><strong>{device.name}</strong><p>{device.id} · {device.platform}</p></div>
               <div className="device-actions">
                 <span className={device.online ? 'online' : 'offline'}>{device.online ? 'ONLINE' : 'OFFLINE'}</span>
-                <button onClick={() => void revoke(device.id)}>Revoke</button>
+                <button onClick={() => void revoke(device.id)} disabled={revokeId === device.id}>
+                  {revokeId === device.id ? 'Revoking…' : 'Revoke'}
+                </button>
               </div>
             </div>
           ))}
         </div>
+        {revokeError && <p role="alert">Revoke failed: {revokeError}</p>}
       </section>
 
       <section className="card next">
