@@ -34,7 +34,7 @@ export default function DevicesPage() {
         headers: { accept: 'application/json' }
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || typeof data.code !== 'string') throw new Error(data.error ?? 'PAIRING_FAILED');
+      if (!res.ok || typeof data.code !== 'string') throw new Error(data.detail ? `${data.error ?? 'PAIRING_FAILED'}: ${data.detail}` : (data.error ?? 'PAIRING_FAILED'));
       setPair({ code: data.code, expiresAt: data.expiresAt });
       await refresh();
     } catch (error) {
