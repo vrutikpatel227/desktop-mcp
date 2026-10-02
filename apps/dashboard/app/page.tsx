@@ -11,16 +11,22 @@ type Health = {
   platform?: string;
   error?: string;
 };
+type Device = { id: string; name: string; online: boolean; revoked: boolean; lastSeen?: string };
 
 export default function Dashboard() {
   const [health, setHealth] = useState<Health>({});
+  const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
 
   async function refresh() {
     setLoading(true);
     try {
-      const res = await fetch('/api/health', { cache: 'no-store' });
-      setHealth(await res.json());
+      const [healthRes, devicesRes] = await Promise.all([
+        fetch('/api/health', { cache: 'no-store' }),
+        fetch('/api/devices', { cache: 'no-store' })
+      ]);
+      setHealth(await healthRes.json());
+      if (devicesRes.ok) setDevices(await devicesRes.json());
     } catch {
       setHealth({ error: 'Unable to reach dashboard API.' });
     } finally {
@@ -28,9 +34,14 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(() => { void refresh(); }, []);
+  useEffect(() => {
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 5000);
+    return () => window.clearInterval(timer);
+  }, []);
 
-  const online = health.ok === true;
+  const onlineDevices = devices.filter(d => d.online && !d.revoked);
+  const online = onlineDevices.length > 0;
 
   return (
     <main className="shell">
@@ -49,7 +60,13 @@ export default function Dashboard() {
           <div className={online ? 'state online' : 'state offline'}>
             <span className="dot" /> {online ? 'Online' : 'Offline'}
           </div>
-          <p>{health.service ?? health.error ?? 'Waiting for health response.'}</p>
+          <p>{onlineDevices.length ? onlineDevices.length + ' device' + (onlineDevices.length === 1 ? '' : 's') + ' connected' : (health.error ?? 'No desktop agent connected.')}</p>
+        </article>
+
+        <article className="card">
+          <div className="label">CONNECTED DEVICES</div>
+          <strong>{onlineDevices.length}</strong>
+          <p>{onlineDevices.length ? onlineDevices.map(d => d.name).join(', ') : 'No devices online'}</p>
         </article>
 
         <article className="card">
