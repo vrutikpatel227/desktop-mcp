@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: desktop_mcp
       POSTGRES_USER: desktop_mcp
-      POSTGRES_PASSWORD: change-me-in-production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -40,9 +40,9 @@ services:
       NODE_ENV: production
       DESKTOP_MCP_GATEWAY_PORT: 8790
       DESKTOP_MCP_BIND_ADDRESS: 0.0.0.0
-      DESKTOP_MCP_DATABASE_URL: postgresql://desktop_mcp:change-me-in-production@postgres:5432/desktop_mcp
+      DESKTOP_MCP_DATABASE_URL: postgresql://desktop_mcp:${POSTGRES_PASSWORD}@postgres:5432/desktop_mcp
       REDIS_URL: redis://redis:6379
-      DESKTOP_MCP_ADMIN_TOKEN: replace-with-a-secret
+      DESKTOP_MCP_ADMIN_TOKEN: ${DESKTOP_MCP_ADMIN_TOKEN:?Set DESKTOP_MCP_ADMIN_TOKEN}
       DESKTOP_MCP_ISSUER: https://mcp.example.com
       DESKTOP_MCP_TRUST_PROXY_TLS: "true"
     expose:
@@ -65,9 +65,9 @@ services:
     environment:
       NODE_ENV: production
       DESKTOP_MCP_GATEWAY_URL: http://gateway:8790
-      DESKTOP_MCP_ADMIN_TOKEN: replace-with-a-secret
-      DASHBOARD_AUTH_USER: replace-with-admin-user
-      DASHBOARD_AUTH_PASSWORD: replace-with-a-long-random-password
+      DESKTOP_MCP_ADMIN_TOKEN: ${DESKTOP_MCP_ADMIN_TOKEN:?Set DESKTOP_MCP_ADMIN_TOKEN}
+      DASHBOARD_AUTH_USER: ${DASHBOARD_AUTH_USER:?Set DASHBOARD_AUTH_USER}
+      DASHBOARD_AUTH_PASSWORD: ${DASHBOARD_AUTH_PASSWORD:?Set DASHBOARD_AUTH_PASSWORD}
     ports:
       - "3000:3000"
 

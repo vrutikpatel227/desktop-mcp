@@ -208,7 +208,7 @@ async function ensureRemoteIdentity() {
   let deviceId = process.env.DESKTOP_MCP_DEVICE_ID ?? await getSecret('device-id');
   let deviceToken = process.env.DESKTOP_MCP_DEVICE_TOKEN ?? await getSecret('device-token');
   const pairCode = PAIR_CODE;
-  if ((!deviceId || !deviceToken) && gatewayHttp && pairCode) {
+  if (gatewayHttp && pairCode) {
     const response = await fetch(gatewayHttp + '/api/pair/complete', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

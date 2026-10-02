@@ -11,6 +11,7 @@ const productionCsp = "default-src 'self'; style-src 'self' 'unsafe-inline'; scr
 
 const nextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
   async headers() {
     const csp = process.env.NODE_ENV === 'production' ? productionCsp : developmentCsp;
     return [{ source: '/(.*)', headers: [...commonHeaders, { key: 'Content-Security-Policy', value: csp }] }];

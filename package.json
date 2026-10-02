@@ -1,9 +1,19 @@
 {
-  "name": "desktop-mcp-server",
-  "version": "0.2.0",
-  "private": true,
+  "name": "desktop-mcp",
+  "version": "0.3.0",
+  "files": [
+    "bin",
+    "scripts/remote-connect.ps1",
+    "scripts/remote-connect.cmd",
+    "dist/apps/desktop-agent",
+    "dist/packages"
+  ],
+  "license": "MIT",
   "type": "module",
   "description": "Universal Desktop MCP Server and local execution agent",
+  "bin": {
+    "desktop-mcp": "./bin/desktop-mcp.cjs"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -14,8 +24,9 @@
     "dev:agent": "tsx apps/desktop-agent/src/index.ts",
     "dev:dashboard": "npm --prefix apps/dashboard run dev",
     "dev:cli": "tsx apps/cli/src/index.ts",
+    "remote": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/remote-connect.ps1",
     "build": "tsc -p tsconfig.json",
-    "test": "node --test",
+    "test": "tsx --test tests/*.test.ts",
     "doctor": "tsx apps/cli/src/index.ts doctor"
   },
   "engines": {
