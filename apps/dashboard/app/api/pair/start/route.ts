@@ -4,16 +4,8 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-export async function GET() {
-  const gateway = process.env.DESKTOP_MCP_GATEWAY_URL ?? 'http://127.0.0.1:8790';
-  try {
-    const response = await fetch(gateway + '/health', { cache: 'no-store', signal: AbortSignal.timeout(12000) });
-    return NextResponse.json({ gateway, healthStatus: response.status, health: await response.text() }, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ gateway, error: error instanceof Error ? error.message : String(error) }, { status: 502 });
-  }
-}
-export async function POST() {
+export async function GET() { return startPairing(); }
+async function startPairing() {
   const gateway = process.env.DESKTOP_MCP_GATEWAY_URL ?? 'http://127.0.0.1:8790';
   const token = process.env.DESKTOP_MCP_ADMIN_TOKEN ?? 'change-me-admin';
   try {
@@ -32,5 +24,7 @@ export async function POST() {
     return NextResponse.json({ error: 'GATEWAY_OFFLINE', detail: error instanceof Error ? error.message : String(error) }, { status: 502 });
   }
 }
+export async function POST() { return startPairing(); }
+
 
 

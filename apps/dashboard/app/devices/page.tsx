@@ -30,7 +30,7 @@ export default function DevicesPage() {
     setPairLoading(true); setPairError(''); setCopyMessage('');
     try {
       const res = await fetch(apiUrl('/api/pair/start'), {
-        method: 'POST', cache: 'no-store', credentials: 'same-origin',
+        method: 'GET', cache: 'no-store', credentials: 'same-origin',
         headers: { accept: 'application/json' }
       });
       const data = await res.json().catch(() => ({}));
